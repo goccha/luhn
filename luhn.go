@@ -13,6 +13,14 @@ func New() *Generator {
 	}
 }
 
+func Calc(str string) int {
+	value := make([]int, len(str))
+	for i := 0; i < len(str); i++ {
+		value[i] = int(str[i] - '0')
+	}
+	return calc(value)
+}
+
 type Generator struct {
 	seed  *rand.Rand
 	mutex sync.Mutex
@@ -32,7 +40,7 @@ func (gen *Generator) Generate(length int, prefix ...string) string {
 	for i := len(iin); i < length-1; i++ {
 		value[i] = gen.seed.Intn(9)
 	}
-	value[length-1] = luhn(clone(value))
+	value[length-1] = calc(clone(value))
 	result := make([]byte, length)
 	for i := 0; i < length; i++ {
 		result[i] = byte(value[i] + '0')
@@ -48,7 +56,7 @@ func clone(value []int) []int {
 	return buf
 }
 
-func luhn(value []int) int {
+func calc(value []int) int {
 	sum := 0
 	for i := 0; i < len(value); i++ {
 		if i%2 == 0 {
@@ -67,5 +75,5 @@ func Verify(ccn string) bool {
 	for i := 0; i < len(ccn); i++ {
 		value[i] = int(ccn[i] - '0')
 	}
-	return luhn(value) == 0
+	return calc(value) == 0
 }
